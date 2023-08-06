@@ -184,7 +184,7 @@ func (self *IntegrationTest) Run(gui integrationTypes.GuiDriver) {
 
 	shell := NewShell(pwd, func(errorMsg string) { gui.Fail(errorMsg) })
 	keys := gui.Keys()
-	testDriver := NewTestDriver(gui, shell, keys, KeyPressDelay())
+	testDriver := NewTestDriver(gui, shell, keys, KeyPressDelay(), MouseClickDelay())
 
 	if KeyPressDelay() > 0 {
 		// Setting caption to clear the options menu from whatever it starts with
@@ -230,6 +230,21 @@ func TestNameFromFilePath(path string) string {
 // defaults to zero
 func KeyPressDelay() int {
 	delayStr := os.Getenv("KEY_PRESS_DELAY")
+	if delayStr == "" {
+		return 0
+	}
+
+	delay, err := strconv.Atoi(delayStr)
+	if err != nil {
+		panic(err)
+	}
+	return delay
+}
+
+// this is the delay in milliseconds between mouse clicks
+// defaults to zero
+func MouseClickDelay() int {
+	delayStr := os.Getenv("MOUSE_CLICK_DELAY")
 	if delayStr == "" {
 		return 0
 	}
