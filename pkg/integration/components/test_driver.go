@@ -10,18 +10,20 @@ import (
 )
 
 type TestDriver struct {
-	gui          integrationTypes.GuiDriver
-	keys         config.KeybindingConfig
-	pushKeyDelay int
+	gui             integrationTypes.GuiDriver
+	keys            config.KeybindingConfig
+	pushKeyDelay    int
+	mouseClickDelay int
 	*assertionHelper
 	shell *Shell
 }
 
-func NewTestDriver(gui integrationTypes.GuiDriver, shell *Shell, keys config.KeybindingConfig, pushKeyDelay int) *TestDriver {
+func NewTestDriver(gui integrationTypes.GuiDriver, shell *Shell, keys config.KeybindingConfig, pushKeyDelay, mouseClickDelay int) *TestDriver {
 	return &TestDriver{
 		gui:             gui,
 		keys:            keys,
 		pushKeyDelay:    pushKeyDelay,
+		mouseClickDelay: mouseClickDelay,
 		assertionHelper: &assertionHelper{gui: gui},
 		shell:           shell,
 	}
@@ -41,6 +43,12 @@ func (self *TestDriver) pressFast(keyStr string) {
 	self.SetCaption("")
 	self.gui.PressKey(keyStr)
 	self.Wait(self.pushKeyDelay / 5)
+}
+
+func (self *TestDriver) click(x, y int) {
+	self.SetCaption(fmt.Sprintf("Clicking %d, %d", x, y))
+	self.gui.Click(x, y)
+	self.Wait(self.mouseClickDelay)
 }
 
 // Should only be used in specific cases where you're doing something weird!
